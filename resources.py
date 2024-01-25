@@ -45,6 +45,7 @@ note_fields = {
     'class_id': fields.Integer
 }
 
+# Resource for a single student
 class StudentResource(Resource):
     @marshal_with(student_fields)
     def get(self, student_id):
@@ -53,7 +54,30 @@ class StudentResource(Resource):
             return student
         else:
             return {'message': 'Student not found'}, 404
+    def put(self, student_id):
+        args = student_parser.parse_args()
+        student = Student.query.get(student_id)
+        if student:
+            student.username = args['username'] if args['username'] else student.username
+            student.email = args['email'] if args['email'] else student.email
+            student.password_hash = args['password']  # Hash the password properly
+            db.session.commit()
+            return student
+        else:
+            return {'message': 'Student not found'}, 404
 
+    def delete(self, student_id):
+        student = Student.query.get(student_id)
+        if student:
+            db.session.delete(student)
+            db.session.commit()
+            return {'message': 'Student deleted'}
+        else:
+            return {'message': 'Student not found'}, 404
+    # Add methods for PUT and DELETE as needed
+
+# Resource for student list
+class StudentListResource(Resource):
     @marshal_with(student_fields)
     def post(self):
         args = student_parser.parse_args()
@@ -62,8 +86,7 @@ class StudentResource(Resource):
         db.session.commit()
         return student, 201
 
-    # Add methods for PUT and DELETE as needed
-
+# Resource for a single class
 class ClassResource(Resource):
     @marshal_with(class_fields)
     def get(self, class_id):
@@ -72,7 +95,32 @@ class ClassResource(Resource):
             return _class
         else:
             return {'message': 'Class not found'}, 404
+        
+    def put(self, class_id):
+        args = class_parser.parse_args()
+        _class = Class.query.get(class_id)
+        if _class:
+            _class.class_name = args['class_name'] if args['class_name'] else _class.class_name
+            _class.instructor = args['instructor'] if args['instructor'] else _class.instructor
+            _class.room = args['room'] if args['room'] else _class.room
+            _class.time = args['time'] if args['time'] else _class.time
+            _class.semester = args['semester'] if args['semester'] else _class.semester
+            db.session.commit()
+            return _class
+        else:
+            return {'message': 'Class not found'}, 404
 
+    def delete(self, class_id):
+        _class = Class.query.get(class_id)
+        if _class:
+            db.session.delete(_class)
+            db.session.commit()
+            return {'message': 'Class deleted'}
+        else:
+            return {'message': 'Class not found'}, 404
+
+# Resource for class list
+class ClassListResource(Resource):
     @marshal_with(class_fields)
     def post(self):
         args = class_parser.parse_args()
@@ -87,8 +135,7 @@ class ClassResource(Resource):
         db.session.commit()
         return _class, 201
 
-    # Add methods for PUT and DELETE as needed
-
+# Resource for a single note
 class NoteResource(Resource):
     @marshal_with(note_fields)
     def get(self, note_id):
@@ -98,6 +145,29 @@ class NoteResource(Resource):
         else:
             return {'message': 'Note not found'}, 404
 
+    def put(self, note_id):
+        args = note_parser.parse_args()
+        note = Note.query.get(note_id)
+        if note:
+            note.title = args['title'] if args['title'] else note.title
+            note.content = args['content'] if args['content'] else note.content
+            # Update class_id if you want to allow changing the note's class
+            db.session.commit()
+            return note
+        else:
+            return {'message': 'Note not found'}, 404
+
+    def delete(self, note_id):
+        note = Note.query.get(note_id)
+        if note:
+            db.session.delete(note)
+            db.session.commit()
+            return {'message': 'Note deleted'}
+        else:
+            return {'message': 'Note not found'}, 404
+
+# Resource for note list
+class NoteListResource(Resource):
     @marshal_with(note_fields)
     def post(self):
         args = note_parser.parse_args()
@@ -111,5 +181,3 @@ class NoteResource(Resource):
         db.session.add(note)
         db.session.commit()
         return note, 201
-
-    # Add methods for PUT and DELETE as needed

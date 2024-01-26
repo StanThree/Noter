@@ -1,6 +1,7 @@
 from flask_restful import Resource, reqparse, fields, marshal_with
 from models import db, Student, Class, Note
 from datetime import datetime
+from flask_bcrypt import bcrypt
 
 # Request parsers
 student_parser = reqparse.RequestParser()
@@ -54,6 +55,8 @@ class StudentResource(Resource):
             return student
         else:
             return {'message': 'Student not found'}, 404
+        
+    @marshal_with(student_fields)
     def put(self, student_id):
         args = student_parser.parse_args()
         student = Student.query.get(student_id)
@@ -81,7 +84,11 @@ class StudentListResource(Resource):
     @marshal_with(student_fields)
     def post(self):
         args = student_parser.parse_args()
-        student = Student(username=args['username'], email=args['email'], password_hash=args['password'])  # Hash password properly
+        
+        # Hash the password
+        hashed_password = bcrypt.generate_password_hash(args['password']).decode('utf-8')
+        
+        student = Student(username=args['username'], email=args['email'], password_hash=hashed_password)
         db.session.add(student)
         db.session.commit()
         return student, 201
@@ -96,6 +103,7 @@ class ClassResource(Resource):
         else:
             return {'message': 'Class not found'}, 404
         
+    @marshal_with(class_fields)   
     def put(self, class_id):
         args = class_parser.parse_args()
         _class = Class.query.get(class_id)
@@ -145,6 +153,7 @@ class NoteResource(Resource):
         else:
             return {'message': 'Note not found'}, 404
 
+    @marshal_with(note_fields)
     def put(self, note_id):
         args = note_parser.parse_args()
         note = Note.query.get(note_id)

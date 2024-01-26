@@ -1,7 +1,6 @@
 # models.py
 from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()  # Initialize the SQLAlchemy instance here
+from extensions import db
 
 class Student(db.Model):
     __tablename__ = 'students'

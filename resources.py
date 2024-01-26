@@ -1,7 +1,8 @@
+#resources.py
 from flask_restful import Resource, reqparse, fields, marshal_with
-from models import db, Student, Class, Note
+from models import Student, Class, Note
 from datetime import datetime
-from flask_bcrypt import bcrypt
+from extensions import bcrypt, db, jwt
 
 # Request parsers
 student_parser = reqparse.RequestParser()

@@ -7,15 +7,11 @@ class BasicTests(unittest.TestCase):
     # Executed prior to each test
     def setUp(self):
         app.config['TESTING'] = True
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['DEBUG'] = False
-        # Use a separate test database URI if available
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///noterdb.db'  # Example URI
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'  # Use SQLite for testing
         self.app = app.test_client()
-
-        # Setup application context here
         with app.app_context():
             db.create_all()
+
 
     # Executed after each test
     def tearDown(self):

@@ -1,15 +1,11 @@
 import unittest
 from app import app, db
 from models import Student
+from config import TestConfig
 
 class BasicTests(unittest.TestCase):
-
-    # Executed prior to each test
     def setUp(self):
-        app.config['TESTING'] = True
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # Use an in-memory SQLite database
-        app.config['WTF_CSRF_ENABLED'] = False
-        app.config['DEBUG'] = False
+        app.config.from_object(TestConfig)
         self.app = app.test_client()
         with app.app_context():
             db.create_all()

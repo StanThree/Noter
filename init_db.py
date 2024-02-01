@@ -1,5 +1,5 @@
 # init_db.py
-from app import app, db  # Import the app instance directly
+from app import app, db
 from models import Student  # import all other models
 
 # No need to call create_app since we're importing the app instance directly

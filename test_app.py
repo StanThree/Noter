@@ -5,6 +5,8 @@ from config import TestConfig
 
 class BasicTests(unittest.TestCase):
     def setUp(self):
+        print("Testing with DB URI:", app.config['SQLALCHEMY_DATABASE_URI'])
+        print("Testing mode:", app.config['TESTING'])
         app.config.from_object(TestConfig)
         self.app = app.test_client()
         with app.app_context():
@@ -18,6 +20,9 @@ class BasicTests(unittest.TestCase):
             db.drop_all()
 
     # Test cases...
+    def test_basic(self):
+        self.assertEqual(1, 1)  # Simple test that should always pass
+
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)

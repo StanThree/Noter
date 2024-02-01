@@ -1,17 +1,21 @@
 import unittest
 from app import app, db
 from models import Student
-from config import TestConfig
 
 class BasicTests(unittest.TestCase):
+
+    # Executed prior to each test
     def setUp(self):
-        print("Testing with DB URI:", app.config['SQLALCHEMY_DATABASE_URI'])
-        print("Testing mode:", app.config['TESTING'])
-        app.config.from_object(TestConfig)
+        app.config['TESTING'] = True
+        app.config['WTF_CSRF_ENABLED'] = False
+        app.config['DEBUG'] = False
+        # Use a separate test database URI if available
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test_noter.db'  # Example URI
         self.app = app.test_client()
+
+        # Setup application context here
         with app.app_context():
             db.create_all()
-
 
     # Executed after each test
     def tearDown(self):
@@ -20,9 +24,6 @@ class BasicTests(unittest.TestCase):
             db.drop_all()
 
     # Test cases...
-    def test_basic(self):
-        self.assertEqual(1, 1)  # Simple test that should always pass
-
     def test_main_page(self):
         response = self.app.get('/', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
